@@ -43,7 +43,7 @@ function Chatbox({ apiKey }) {
 
     const systemMessage = {
       role: 'system',
-      content: 'Explain all concepts like I am 21 years old.',
+      content: 'You are ChatGPT. Help me with any questions as needed',
     };
 
     const apiRequestBody = {
@@ -51,18 +51,23 @@ function Chatbox({ apiKey }) {
       messages: [systemMessage, ...apiMessages],
     };
 
-    await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(apiRequestBody),
-    })
-      .then((data) => {
-        return data.json();
-      })
-      .then((data) => {
+
+    try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(apiRequestBody),
+        });
+    
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+    
+        const data = await response.json();
+        // console.log(data)
         setMessages([
           ...chatMessages,
           {
@@ -70,9 +75,44 @@ function Chatbox({ apiKey }) {
             sender: 'ChatGPT',
           },
         ]);
+    
         setTyping(false);
-      });
-  }
+      } catch (error) {
+        console.error('Error:', error);
+        setMessages([
+          ...chatMessages,
+          {
+            message: 'Server down, try again later',
+            sender: 'ChatGPT',
+          },
+        ]);
+        setTyping(false);
+      }
+    }
+
+
+    // await fetch('https://api.openai.com/v1/chat/completions', {
+    //   method: 'POST',
+    //   headers: {
+    //     Authorization: `Bearer ${apiKey}`,
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(apiRequestBody),
+    // })
+    //   .then((data) => {
+    //     return data.json();
+    //   })
+    //   .then((data) => {
+    //     setMessages([
+    //       ...chatMessages,
+    //       {
+    //         message: data.choices[0].message.content,
+    //         sender: 'ChatGPT',
+    //       },
+    //     ]);
+    //     setTyping(false);
+    //   });
+//   }
 
   return (
     <div className="App">
