@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChatContainer, MainContainer, Message, MessageInput, MessageList, TypingIndicator } from '@chatscope/chat-ui-kit-react';
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 
-function Chatbox({ apiKey }) {
+function Chatbox() {
   const [messages, setMessages] = useState([
     {
       message: 'Hello, I am ChatGPT',
@@ -53,10 +53,9 @@ function Chatbox({ apiKey }) {
 
 
     try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch('http://127.0.0.1:5173/api/gpt-3', {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(apiRequestBody),
